@@ -460,203 +460,432 @@ button:disabled{opacity:.35!important;transform:none!important;box-shadow:none!i
 </head>
 <body>
 
-<!-- ── PHOTO PANEL ── -->
+<!-- ── MEDIA PANEL ── -->
 <style>
-#photoBtn{
+/* Float button */
+#mediaBtn{
   position:fixed;bottom:18px;left:18px;z-index:8000;
   background:linear-gradient(135deg,#ffd700,#e8a000);
-  border:none;border-radius:50%;width:52px;height:52px;
+  border:none;border-radius:50%;width:54px;height:54px;
   font-size:22px;cursor:pointer;
   box-shadow:0 4px 16px rgba(255,200,0,.6),0 2px 6px rgba(0,0,0,.6);
   display:flex;align-items:center;justify-content:center;
-  touch-action:manipulation;
-  transition:transform .15s,box-shadow .15s;
+  touch-action:manipulation;transition:transform .15s;
 }
-#photoBtn:active{transform:scale(.9);}
-#photoPanel{
+#mediaBtn:active{transform:scale(.88);}
+
+/* Panel overlay */
+#mediaPanel{
   position:fixed;inset:0;z-index:8500;
-  background:rgba(0,0,0,.92);
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  padding:20px;
+  background:rgba(0,0,0,.93);
+  display:none;flex-direction:column;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px;
 }
-#photoPanel.open{display:flex;}
-.pp-box{
+#mediaPanel.open{display:flex;}
+
+/* Inner box */
+.mp-box{
   background:linear-gradient(145deg,#12092a,#1e1040);
-  border:2px solid #ffd700;border-radius:24px;
-  padding:24px 20px;width:100%;max-width:380px;
-  box-shadow:0 0 40px rgba(255,215,0,.3);
+  border:2px solid #ffd700;border-radius:22px;
+  padding:20px 16px;width:100%;max-width:420px;
+  margin:auto;
+  box-shadow:0 0 40px rgba(255,215,0,.25);
 }
-.pp-title{
-  text-align:center;font-size:16px;font-weight:900;
-  color:#ffd700;letter-spacing:2px;margin-bottom:18px;
+
+/* Tabs */
+.mp-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.mp-tab{
+  flex:1;padding:10px 0;border-radius:10px;
+  border:1px solid rgba(255,215,0,.3);
+  background:rgba(0,0,0,.4);color:#b89a3a;
+  font-size:13px;font-weight:bold;cursor:pointer;
+  text-align:center;touch-action:manipulation;
+  transition:background .15s,color .15s;
 }
-.pp-row{
-  display:flex;align-items:center;gap:12px;
-  background:rgba(255,255,255,.05);border-radius:12px;
-  padding:10px 12px;margin-bottom:10px;
-  border:1px solid rgba(255,215,0,.2);
+.mp-tab.active{
+  background:linear-gradient(135deg,#ffd700,#cc9900);
+  color:#110a1c;border-color:#ffd700;
 }
-.pp-label{flex:1;color:#ffde7a;font-size:13px;font-weight:bold;}
-.pp-preview{
-  width:44px;height:44px;object-fit:contain;
-  border-radius:8px;background:#000;border:1px solid rgba(255,215,0,.3);
-  display:none;
+
+/* Rows */
+.mp-row{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border-radius:11px;
+  padding:9px 11px;margin-bottom:8px;
+  border:1px solid rgba(255,215,0,.15);
 }
-.pp-upload{
+.mp-label{flex:1;color:#ffde7a;font-size:12px;font-weight:bold;line-height:1.3;}
+.mp-status{font-size:10px;color:#66ff66;margin-top:2px;display:none;}
+.mp-status.on{display:block;}
+.mp-preview-img{
+  width:40px;height:40px;object-fit:contain;
+  border-radius:7px;background:#000;border:1px solid rgba(255,215,0,.3);
+  display:none;flex-shrink:0;
+}
+.mp-preview-aud{
+  font-size:18px;display:none;flex-shrink:0;
+}
+.mp-preview-aud.on{display:block;}
+.mp-btn{
   background:linear-gradient(135deg,#7b1fa2,#4a0e7a);
   border:1px solid #ffd700;border-radius:8px;
   color:#ffd700;font-size:11px;font-weight:bold;
-  padding:8px 12px;cursor:pointer;white-space:nowrap;
-  touch-action:manipulation;
+  padding:8px 11px;cursor:pointer;white-space:nowrap;
+  touch-action:manipulation;flex-shrink:0;
 }
-.pp-upload:active{opacity:.8;}
-.pp-reset{
-  width:100%;margin-top:14px;
-  background:rgba(255,50,50,.12);border:1px solid #ff4444;
-  border-radius:10px;padding:10px;
+.mp-btn:active{opacity:.75;}
+.mp-btn.green{background:linear-gradient(135deg,#1a6b1a,#0d3d0d);border-color:#4caf50;color:#b9f5c3;}
+
+/* Bottom buttons */
+.mp-footer{display:flex;gap:8px;margin-top:12px;}
+.mp-reset-btn{
+  flex:1;background:rgba(255,50,50,.12);border:1px solid #ff4444;
+  border-radius:10px;padding:11px;
   color:#ff6666;font-size:12px;font-weight:bold;
-  cursor:pointer;letter-spacing:1px;touch-action:manipulation;
+  cursor:pointer;touch-action:manipulation;
 }
-.pp-close{
-  width:100%;margin-top:8px;
-  background:linear-gradient(to bottom,#ffd700,#cc9900);
-  border:none;border-radius:10px;padding:12px;
+.mp-save-btn{
+  flex:2;background:linear-gradient(to bottom,#ffd700,#cc9900);
+  border:none;border-radius:10px;padding:11px;
   color:#110a1c;font-size:14px;font-weight:bold;
   cursor:pointer;touch-action:manipulation;
 }
+.mp-save-btn:active{opacity:.85;}
+
+/* Tab content */
+.mp-page{display:none;}
+.mp-page.active{display:block;}
+
+/* section label */
+.mp-section{font-size:10px;color:#b89a3a;letter-spacing:1.5px;font-weight:bold;
+  margin:10px 0 6px;text-transform:uppercase;}
 </style>
 
-<button id="photoBtn" title="Ganti Foto">📷</button>
+<button id="mediaBtn" title="Foto & Suara">🎛️</button>
 
-<div id="photoPanel">
-  <div class="pp-box">
-    <div class="pp-title">📷 GANTI FOTO SESUKA KAMU</div>
+<div id="mediaPanel">
+ <div class="mp-box">
 
-    <div class="pp-row">
-      <span class="pp-label">🔱 Scatter Symbol</span>
-      <img class="pp-preview" id="pp-scatter-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('scatter',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">🎰 Bonus Trigger</span>
-      <img class="pp-preview" id="pp-bonusStart-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('bonusStart',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">⚡ Bonus Intro</span>
-      <img class="pp-preview" id="pp-bonusIntro-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('bonusIntro',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">🏆 Bonus Selesai</span>
-      <img class="pp-preview" id="pp-bonusEnd-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('bonusEnd',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">🎉 Retrigger</span>
-      <img class="pp-preview" id="pp-retrigger-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('retrigger',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">💥 Big Win</span>
-      <img class="pp-preview" id="pp-bigWin-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('bigWin',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">🌟 Mega Win</span>
-      <img class="pp-preview" id="pp-megaWin-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('megaWin',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">🔥 Super Win</span>
-      <img class="pp-preview" id="pp-superWin-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('superWin',this)">
-      </label>
-    </div>
-
-    <div class="pp-row">
-      <span class="pp-label">👑 Max Win</span>
-      <img class="pp-preview" id="pp-maxWin-img">
-      <label class="pp-upload">
-        PILIH<input type="file" accept="image/*" style="display:none" onchange="ppLoad('maxWin',this)">
-      </label>
-    </div>
-
-    <button class="pp-reset" onclick="ppResetAll()">🗑️ RESET SEMUA FOTO</button>
-    <button class="pp-close" onclick="document.getElementById('photoPanel').classList.remove('open')">✓ SELESAI</button>
+  <!-- TABS -->
+  <div class="mp-tabs">
+   <div class="mp-tab active" id="tabFoto" onclick="mpTab('foto')">📷 FOTO</div>
+   <div class="mp-tab"        id="tabSuara" onclick="mpTab('suara')">🔊 SUARA</div>
   </div>
-</div>
+
+  <!-- ── FOTO TAB ── -->
+  <div class="mp-page active" id="pageFoto">
+
+   <div class="mp-section">Simbol &amp; Splash</div>
+
+   <div class="mp-row">
+    <span class="mp-label">🔱 Scatter Symbol<div class="mp-status" id="fst-scatter"></div></span>
+    <img class="mp-preview-img" id="fpr-scatter">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('scatter',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🎰 Bonus Trigger<div class="mp-status" id="fst-bonusStart"></div></span>
+    <img class="mp-preview-img" id="fpr-bonusStart">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('bonusStart',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">⚡ Bonus Intro<div class="mp-status" id="fst-bonusIntro"></div></span>
+    <img class="mp-preview-img" id="fpr-bonusIntro">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('bonusIntro',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🏆 Bonus Selesai<div class="mp-status" id="fst-bonusEnd"></div></span>
+    <img class="mp-preview-img" id="fpr-bonusEnd">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('bonusEnd',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🎉 Retrigger<div class="mp-status" id="fst-retrigger"></div></span>
+    <img class="mp-preview-img" id="fpr-retrigger">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('retrigger',this)"></label>
+   </div>
+
+   <div class="mp-section">Win Tier</div>
+
+   <div class="mp-row">
+    <span class="mp-label">💥 Big Win<div class="mp-status" id="fst-bigWin"></div></span>
+    <img class="mp-preview-img" id="fpr-bigWin">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('bigWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🌟 Mega Win<div class="mp-status" id="fst-megaWin"></div></span>
+    <img class="mp-preview-img" id="fpr-megaWin">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('megaWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🔥 Super Win<div class="mp-status" id="fst-superWin"></div></span>
+    <img class="mp-preview-img" id="fpr-superWin">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('superWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">👑 Max Win<div class="mp-status" id="fst-maxWin"></div></span>
+    <img class="mp-preview-img" id="fpr-maxWin">
+    <label class="mp-btn">PILIH<input type="file" accept="image/*" style="display:none" onchange="mpImg('maxWin',this)"></label>
+   </div>
+
+   <div class="mp-footer">
+    <button class="mp-reset-btn" onclick="mpResetFoto()">🗑️ RESET FOTO</button>
+    <button class="mp-save-btn" onclick="mpClose()">✅ SIMPAN & TUTUP</button>
+   </div>
+  </div><!-- end pageFoto -->
+
+  <!-- ── SUARA TAB ── -->
+  <div class="mp-page" id="pageSuara">
+
+   <div class="mp-section">🎵 Background Music</div>
+
+   <div class="mp-row" style="flex-wrap:wrap;gap:8px;">
+    <span class="mp-label" style="width:100%;">🎶 BGM Sepanjang Permainan<div class="mp-status" id="sst-bgm"></div></span>
+    <label class="mp-btn" style="flex:1;text-align:center;">UPLOAD MP3/WAV<input type="file" accept="audio/*" style="display:none" onchange="mpBgmUpload(this)"></label>
+    <button class="mp-btn green" id="bgmPlayBtn" onclick="mpBgmToggle()" style="flex:1;text-align:center;">▶ PLAY</button>
+    <button class="mp-btn" onclick="mpBgmStop()" style="flex:1;text-align:center;background:linear-gradient(135deg,#6b1a1a,#3d0d0d);border-color:#ff4444;color:#ff9999;">⏹ STOP</button>
+   </div>
+   <div class="mp-row" style="flex-wrap:wrap;">
+    <span class="mp-label">🔉 Volume BGM</span>
+    <input type="range" id="bgmVol" min="0" max="100" value="40"
+      style="-webkit-appearance:none;flex:1;height:6px;border-radius:3px;background:#3a2a6b;cursor:pointer;accent-color:#ffd700;"
+      oninput="mpBgmVol(this.value)">
+    <span id="bgmVolVal" style="color:#ffd700;font-size:12px;font-weight:bold;min-width:36px;text-align:right;">40%</span>
+   </div>
+
+   <div class="mp-section">Gameplay</div>
+
+   <div class="mp-row">
+    <span class="mp-label">🎰 Suara Spin<div class="mp-status" id="sst-spin"></div></span>
+    <span class="mp-preview-aud" id="spr-spin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('spin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('spin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🛑 Reel Stop<div class="mp-status" id="sst-stop"></div></span>
+    <span class="mp-preview-aud" id="spr-stop">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('stop')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('stop',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🔱 Scatter Muncul<div class="mp-status" id="sst-scatter"></div></span>
+    <span class="mp-preview-aud" id="spr-scatter">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('scatter')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('scatter',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">👆 Tombol Klik<div class="mp-status" id="sst-buttonClick"></div></span>
+    <span class="mp-preview-aud" id="spr-buttonClick">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('buttonClick')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('buttonClick',this)"></label>
+   </div>
+
+   <div class="mp-section">Bonus</div>
+
+   <div class="mp-row">
+    <span class="mp-label">🎰 Bonus Mulai<div class="mp-status" id="sst-bonusStart"></div></span>
+    <span class="mp-preview-aud" id="spr-bonusStart">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('bonusStart')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('bonusStart',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🏆 Bonus Selesai<div class="mp-status" id="sst-bonusEnd"></div></span>
+    <span class="mp-preview-aud" id="spr-bonusEnd">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('bonusEnd')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('bonusEnd',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🎉 Retrigger<div class="mp-status" id="sst-retrigger"></div></span>
+    <span class="mp-preview-aud" id="spr-retrigger">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('retrigger')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('retrigger',this)"></label>
+   </div>
+
+   <div class="mp-section">Win</div>
+
+   <div class="mp-row">
+    <span class="mp-label">✨ Small Win<div class="mp-status" id="sst-smallWin"></div></span>
+    <span class="mp-preview-aud" id="spr-smallWin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('smallWin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('smallWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">💥 Big Win<div class="mp-status" id="sst-bigWin"></div></span>
+    <span class="mp-preview-aud" id="spr-bigWin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('bigWin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('bigWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🌟 Mega Win<div class="mp-status" id="sst-megaWin"></div></span>
+    <span class="mp-preview-aud" id="spr-megaWin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('megaWin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('megaWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">🔥 Super Win<div class="mp-status" id="sst-superWin"></div></span>
+    <span class="mp-preview-aud" id="spr-superWin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('superWin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('superWin',this)"></label>
+   </div>
+   <div class="mp-row">
+    <span class="mp-label">👑 Max Win<div class="mp-status" id="sst-maxWin"></div></span>
+    <span class="mp-preview-aud" id="spr-maxWin">🎵</span>
+    <button class="mp-btn green" onclick="mpTestSound('maxWin')">TEST</button>
+    <label class="mp-btn">UPLOAD<input type="file" accept="audio/*" style="display:none" onchange="mpAud('maxWin',this)"></label>
+   </div>
+
+   <div class="mp-footer">
+    <button class="mp-reset-btn" onclick="mpResetSuara()">🗑️ RESET SUARA</button>
+    <button class="mp-save-btn" onclick="mpClose()">✅ SIMPAN & TUTUP</button>
+   </div>
+  </div><!-- end pageSuara -->
+
+ </div><!-- mp-box -->
+</div><!-- mediaPanel -->
 
 <script>
-// Photo Panel helpers — run AFTER CONFIG is defined
-function ppGetCfg(key){
+// ── MEDIA PANEL CONTROLLER ───────────────────────────────────
+function mpTab(t){
+  document.getElementById('tabFoto').classList.toggle('active',t==='foto');
+  document.getElementById('tabSuara').classList.toggle('active',t==='suara');
+  document.getElementById('pageFoto').classList.toggle('active',t==='foto');
+  document.getElementById('pageSuara').classList.toggle('active',t==='suara');
+}
+function mpClose(){
+  document.getElementById('mediaPanel').classList.remove('open');
+}
+document.getElementById('mediaBtn').addEventListener('click',()=>{
+  // UNLOCK AudioContext on first tap
+  if(typeof AudioManager!=='undefined'){try{AudioManager.unlock();}catch(e){}}
+  document.getElementById('mediaPanel').classList.toggle('open');
+});
+
+// ── IMAGE LOADER ─────────────────────────────────────────────
+function mpImgCfg(key){
+  if(typeof CONFIG==='undefined')return null;
   const M={
-    scatter:    ()=>CONFIG.scatter,
-    bonusStart: ()=>CONFIG.splashes.bonusStart,
-    bonusIntro: ()=>CONFIG.splashes.bonusIntro,
-    bonusEnd:   ()=>CONFIG.splashes.bonusEnd,
-    retrigger:  ()=>CONFIG.splashes.retrigger,
-    bigWin:     ()=>CONFIG.winTiers.big,
-    megaWin:    ()=>CONFIG.winTiers.mega,
-    superWin:   ()=>CONFIG.winTiers.super,
-    maxWin:     ()=>CONFIG.winTiers.max,
+    scatter:()=>CONFIG.scatter,
+    bonusStart:()=>CONFIG.splashes.bonusStart,
+    bonusIntro:()=>CONFIG.splashes.bonusIntro,
+    bonusEnd:()=>CONFIG.splashes.bonusEnd,
+    retrigger:()=>CONFIG.splashes.retrigger,
+    bigWin:()=>CONFIG.winTiers.big,
+    megaWin:()=>CONFIG.winTiers.mega,
+    superWin:()=>CONFIG.winTiers.super,
+    maxWin:()=>CONFIG.winTiers.max,
   };
   return M[key]?M[key]():null;
 }
-function ppLoad(key,input){
+function mpImg(key,input){
   if(!input.files||!input.files[0])return;
   const file=input.files[0];
   if(file.size>8*1024*1024){alert('File terlalu besar (max 8MB)');return;}
   const r=new FileReader();
   r.onload=e=>{
-    const cfg=ppGetCfg(key);
-    if(!cfg)return;
-    cfg.imageUrl=e.target.result;
-    cfg.useImage=true;
-    // update preview
-    const prev=document.getElementById('pp-'+key+'-img');
+    const cfg=mpImgCfg(key);if(!cfg)return;
+    cfg.imageUrl=e.target.result;cfg.useImage=true;
+    const prev=document.getElementById('fpr-'+key);
     if(prev){prev.src=e.target.result;prev.style.display='block';}
-    // jika scatter, re-render semua scatter cells
-    if(key==='scatter'&&typeof ReelEngine!=='undefined'){
-      try{ReelEngine.refreshScatterCells();}catch(ex){}
-    }
+    const st=document.getElementById('fst-'+key);
+    if(st){st.textContent='✅ '+file.name;st.classList.add('on');}
+    if(key==='scatter'&&typeof ReelEngine!=='undefined'){try{ReelEngine.refreshScatterCells();}catch(ex){}}
   };
   r.readAsDataURL(file);
 }
-function ppResetAll(){
+function mpResetFoto(){
   ['scatter','bonusStart','bonusIntro','bonusEnd','retrigger','bigWin','megaWin','superWin','maxWin'].forEach(k=>{
-    const cfg=ppGetCfg(k);if(!cfg)return;
+    const cfg=mpImgCfg(k);if(!cfg)return;
     cfg.imageUrl=null;cfg.useImage=false;
-    const prev=document.getElementById('pp-'+k+'-img');
+    const prev=document.getElementById('fpr-'+k);
     if(prev){prev.src='';prev.style.display='none';}
+    const st=document.getElementById('fst-'+k);
+    if(st){st.textContent='';st.classList.remove('on');}
   });
   if(typeof ReelEngine!=='undefined'){try{ReelEngine.refreshScatterCells();}catch(ex){}}
 }
-document.getElementById('photoBtn').addEventListener('click',()=>{
-  document.getElementById('photoPanel').classList.toggle('open');
-});
+
+// ── AUDIO LOADER ─────────────────────────────────────────────
+function mpAud(key,input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>15*1024*1024){alert('File terlalu besar (max 15MB)');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    if(typeof AudioManager!=='undefined')AudioManager.loadFromFile2(key,e.target.result);
+    const prev=document.getElementById('spr-'+key);
+    if(prev){prev.classList.add('on');}
+    const st=document.getElementById('sst-'+key);
+    if(st){st.textContent='✅ '+file.name;st.classList.add('on');}
+  };
+  r.readAsDataURL(file);
+}
+function mpTestSound(key){
+  if(typeof AudioManager!=='undefined'){try{AudioManager.unlock();AudioManager.play(key);}catch(e){}}
+}
+function mpResetSuara(){
+  mpBgmStop();
+  if(typeof AudioManager!=='undefined')AudioManager.resetAll();
+  ['spin','stop','scatter','bonusStart','bonusEnd','retrigger','smallWin','bigWin','megaWin','superWin','maxWin','buttonClick','error'].forEach(k=>{
+    const prev=document.getElementById('spr-'+k);if(prev)prev.classList.remove('on');
+    const st=document.getElementById('sst-'+k);if(st){st.textContent='';st.classList.remove('on');}
+  });
+}
+
+// ── BGM CONTROLLER ──────────────────────────────────────────
+(function(){
+  let _audio=null;
+  let _vol=0.4;
+  let _playing=false;
+
+  window.mpBgmUpload=function(input){
+    if(!input.files||!input.files[0])return;
+    const file=input.files[0];
+    if(file.size>30*1024*1024){alert('File terlalu besar (max 30MB)');return;}
+    const url=URL.createObjectURL(file);
+    if(_audio){_audio.pause();_audio.src='';}
+    _audio=new Audio(url);
+    _audio.loop=true;
+    _audio.volume=_vol;
+    const st=document.getElementById('sst-bgm');
+    if(st){st.textContent='✅ '+file.name;st.classList.add('on');}
+    // auto play after upload
+    _audio.play().then(()=>{
+      _playing=true;
+      const btn=document.getElementById('bgmPlayBtn');
+      if(btn)btn.textContent='⏸ PAUSE';
+    }).catch(()=>{
+      const btn=document.getElementById('bgmPlayBtn');
+      if(btn)btn.textContent='▶ PLAY';
+    });
+  };
+
+  window.mpBgmToggle=function(){
+    if(!_audio){return;}
+    if(typeof AudioManager!=='undefined'){try{AudioManager.unlock();}catch(e){}}
+    const btn=document.getElementById('bgmPlayBtn');
+    if(_playing){
+      _audio.pause();_playing=false;
+      if(btn)btn.textContent='▶ PLAY';
+    }else{
+      _audio.play().then(()=>{
+        _playing=true;
+        if(btn)btn.textContent='⏸ PAUSE';
+      }).catch(()=>{});
+    }
+  };
+
+  window.mpBgmStop=function(){
+    if(_audio){_audio.pause();_audio.currentTime=0;_playing=false;}
+    const btn=document.getElementById('bgmPlayBtn');
+    if(btn)btn.textContent='▶ PLAY';
+  };
+
+  window.mpBgmVol=function(v){
+    _vol=parseInt(v)/100;
+    if(_audio)_audio.volume=_vol;
+    const el=document.getElementById('bgmVolVal');
+    if(el)el.textContent=v+'%';
+  };
+})();
 </script>
 
 <!-- ── ATMOSPHERE & EFFECTS CANVASES ── -->
@@ -1637,31 +1866,41 @@ const AudioManager=(()=>{
     },
   };
 
+  // Unlock AudioContext (call on user gesture)
+  function unlock(){
+    const ac=_getCtx();
+    if(ac&&ac.state==='suspended'){ac.resume().catch(()=>{});}
+  }
+
   function play(key){
     if(_muted)return;
-    _getCtx();
+    unlock();
     const cfg=CONFIG.audio[key];
-    // If custom file uploaded, use it
     if(cfg&&cfg.url){
       try{
         if(!_pool[key]){_pool[key]=new Audio();}
-        const a=_pool[key];a.src=cfg.url;
+        const a=_pool[key];
+        if(a.src!==cfg.url)a.src=cfg.url;
         a.volume=Math.max(0,Math.min(1,_masterVol*_sfxVol*(cfg.volume||1)));
-        a.currentTime=0;a.play().catch(()=>{});
+        a.currentTime=0;
+        const p=a.play();if(p)p.catch(()=>{});
         return;
       }catch(e){}
     }
-    // Fallback: synthesized sound
     try{if(_synth[key])_synth[key]();}catch(e){}
   }
 
   function loadFromFile(key,input){
     if(!input.files||!input.files[0])return;
     const file=input.files[0];
-    if(file.size>10*1024*1024){return;}
+    if(file.size>15*1024*1024)return;
     const reader=new FileReader();
     reader.onload=e=>{CONFIG.audio[key]={url:e.target.result,volume:1.0};_pool[key]=null;};
     reader.readAsDataURL(file);
+  }
+  // Direct data URL version (from MediaPanel)
+  function loadFromFile2(key,dataUrl){
+    CONFIG.audio[key]={url:dataUrl,volume:1.0};_pool[key]=null;
   }
   function setVolume(type,val){
     val=parseInt(val)/100;
@@ -1676,7 +1915,7 @@ const AudioManager=(()=>{
   function resetAll(){
     Object.keys(CONFIG.audio).forEach(k=>{CONFIG.audio[k]={url:null,volume:1.0};_pool[k]=null;});
   }
-  return{play,loadFromFile,setVolume,toggleMute,resetAll};
+  return{play,unlock,loadFromFile,loadFromFile2,setVolume,toggleMute,resetAll};
 })();
 
 // ─── ASSET MANAGER ───────────────────────────────────────────
@@ -2801,7 +3040,7 @@ const Game=(()=>{
 })();
 
 // ─── EVENT LISTENERS ─────────────────────────────────────────
-document.getElementById('spinMainBtn').addEventListener('click',()=>{
+document.getElementById('spinMainBtn').addEventListener('click',()=>{if(typeof AudioManager!=='undefined'){try{AudioManager.unlock();}catch(e){}};
   if(AutoSpinEngine.isActive()){Game.stopAuto();return;}
   Game.spin();
 });
